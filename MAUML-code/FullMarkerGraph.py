@@ -1,10 +1,22 @@
+#import files for reading csv (pandas), plotting graphs and animations (matplotlib/pylab)
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pylab import *
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 
+
+#This allowed the animation to work, without this setting the graph was displayed in a different style
+#of screen which was individual to PyCharm, this allows the graph to be loaded on almost every machine
+#as far as I can tell
 matplotlib.use('TkAgg')
+
+
+#Asks the user for input as to which file they would like to animate as a graph. This works
+#specifically for the full marker set of 16 markers (hence the number of columns being accessed).
+#returns the data, again in a relatively naive way (I have figure out how to easily get sub
+#arrays from pandas dataFrames.
 
 
 def parse_data():
@@ -63,6 +75,11 @@ def parse_data():
     return data
 
 
+#Setting the point connectors for the graph animation at each stage. The same
+#points are being connected but due to the animation, these need to be reset each
+#time there are a new set of plot points.
+
+
 def add_lines(axes, x, y, z):
     axes.plot([x[3], x[2], x[0], x[4], x[5], x[6]],
               [y[3], y[2], y[0], y[4], y[5], y[6]],
@@ -84,6 +101,10 @@ def add_lines(axes, x, y, z):
               [z[12], z[11], z[9], z[13], z[14], z[15]], color='r')
 
 
+#When the axes are cleared, the default settings come back and so this method ensures that
+#all of the limits and the axis labels remain as they were.
+
+
 def add_lims_and_labels(axes):
     axes.clear()
     axes.set_xlim3d(-1500, 2500)
@@ -92,6 +113,10 @@ def add_lims_and_labels(axes):
     axes.set_xlabel('X')
     axes.set_ylabel('Y')
     axes.set_zlabel('Z')
+
+
+#Update method as previously mentioned in the PythonSkeletonFile.py, used for the animation
+#of the graph, giving it new points in each iteration.
 
 
 def update(num):

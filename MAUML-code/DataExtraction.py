@@ -27,6 +27,15 @@ def parse_data():
     return df
 
 
+def feature_extract(this_list):
+    minim = min(this_list)
+    maxim = max(this_list)
+    average = stat.mean(this_list)
+    stdevi = stat.stdev(this_list)
+    feature_set = [minim, maxim, average, stdevi]
+    return feature_set
+
+
 data = parse_data()
 
 r_sho = data[:, :11]
@@ -52,16 +61,8 @@ data_separated = [r_sho, arm_si, r_elb, r_wri,
                   r_hip, leg_si, r_kne, r_ank,
                   l_hip, l_kne, l_ank]
 
-
-for i in range(len(data_separated)):
-    print("\n\n")
-    print(data_separated[i][0])
+# for i in range(len(data_separated)):
+#     print("\n\n")
+#     print(data_separated[i][0])
 
 print(data)
-
-
-def feature_extract(this_list):
-    minim = min(this_list)
-    maxim = max(this_list)
-    average = stat.mean(this_list)
-

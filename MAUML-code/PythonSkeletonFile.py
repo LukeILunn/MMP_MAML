@@ -1,9 +1,17 @@
+#import files for reading csv (pandas), plotting graphs and animations (matplotlib/pylab)
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pylab import *
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 matplotlib.use('TkAgg')
+
+
+#Grabs file info and places the data into a list which can be used to create
+#the animation of the arm in this instance. Files have moved since the skeleton
+#file so may need tweaking. Was merely an experimentation base to try out things
+#in python and so is a little naive.
 
 
 def get_data():
@@ -56,6 +64,10 @@ def get_data():
     data = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
     return data
 
+#update is a function which is required when using the FuncAnimation method to animate a
+#graph. Basically it picks the next sequence of plot points (or the next frame of the animation)
+#depending upon how you look at it.
+
 
 def update(num):
     ax.clear()
@@ -66,11 +78,14 @@ def update(num):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    r_wri = ax.scatter(d[0][0][num], d[0][1][num], d[0][2][num], s=20, depthshade=True)
-    r_elb = ax.scatter(d[1][0][num], d[1][1][num], d[1][2][num], s=20, depthshade=True)
-    r_sho = ax.scatter(d[2][0][num], d[2][1][num], d[2][2][num], s=20, depthshade=True)
+    ax.scatter(d[0][0][num], d[0][1][num], d[0][2][num], s=20, depthshade=True)
+    ax.scatter(d[1][0][num], d[1][1][num], d[1][2][num], s=20, depthshade=True)
+    ax.scatter(d[2][0][num], d[2][1][num], d[2][2][num], s=20, depthshade=True)
     ax.plot([d[0][0][num], d[1][0][num], d[2][0][num]], [d[0][1][num], d[1][1][num], d[2][1][num]], [d[0][2][num], d[1][2][num], d[2][2][num]], color='r')
 
+
+#creating the necessary variables for plotting graphs, first is the graph stage as a whole
+#second is the set of axes which will in turn hold the points I plot onto it.
 
 fig = matplotlib.pyplot.figure()
 ax = fig.add_subplot(111, projection='3d')
