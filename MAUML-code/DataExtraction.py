@@ -137,9 +137,6 @@ l_ank_overAcc = data[:, :175:176]
 # can be changed to adjust the amount of time I want each frame set to cover (50 covers half a second intervals)
 frame_rate = 50
 
-# Used to grab only complete sets of the size frame_rate specifies from the data later on
-frame_set_len = r_sho_loc.shape[0] // frame_rate
-
 # Lists for sectioning the data into sets of 50 frames (each of these will then be used for feature extraction later)
 r_s_l_f_sets = []
 r_s_v_f_sets = []
@@ -238,7 +235,7 @@ l_a_a_f_sets = []
 l_a_oA_f_sets = []
 
 # Grab the data and put it into lists based upon the specified frame_rate chosen. Currently sets of 50 frames
-for i in range(0, frame_set_len, frame_rate):
+for i in range(0, (r_sho_loc.shape[0] - 50), frame_rate):
     r_s_l_f_sets.append(r_sho_loc[i:i + frame_rate, :])
     r_s_v_f_sets.append(r_sho_vel[i:i + frame_rate, :])
     r_s_oV_f_sets.append(r_sho_overVel[i:i + frame_rate, :])
@@ -335,22 +332,28 @@ for i in range(0, frame_set_len, frame_rate):
     l_a_a_f_sets.append(l_ank_acc[i:i + frame_rate, :])
     l_a_oA_f_sets.append(l_ank_overAcc[i:i + frame_rate, :])
 
-data_for_feature_extraction = [r_s_l_f_sets, r_s_v_f_sets, r_s_oV_f_sets, r_s_a_f_sets, r_s_oA_f_sets,
-                               a_si_l_f_sets, a_si_v_f_sets, a_si_oV_f_sets, a_si_a_f_sets, a_si_oA_f_sets,
-                               r_e_l_f_sets, r_e_v_f_sets, r_e_oV_f_sets, r_e_a_f_sets, r_e_oA_f_sets,
-                               r_w_l_f_sets, r_w_v_f_sets, r_w_oV_f_sets, r_w_a_f_sets, r_w_oA_f_sets,
-                               l_s_l_f_sets, l_s_v_f_sets, l_s_oV_f_sets, l_s_a_f_sets, l_s_oA_f_sets,
-                               l_e_l_f_sets, l_e_v_f_sets, l_e_oV_f_sets, l_e_a_f_sets, l_e_oA_f_sets,
-                               l_w_l_f_sets, l_w_v_f_sets, l_w_oV_f_sets, l_w_a_f_sets, l_w_oA_f_sets,
-                               c_l_f_sets, c_v_f_sets, c_oV_f_sets, c_a_f_sets, c_oA_f_sets,
-                               s_l_f_sets, s_v_f_sets, s_oV_f_sets, s_a_f_sets, s_oA_f_sets,
-                               r_h_l_f_sets, r_h_v_f_sets, r_h_oV_f_sets, r_h_a_f_sets, r_h_oA_f_sets,
-                               l_si_l_f_sets, l_si_v_f_sets, l_si_oV_f_sets, l_si_a_f_sets, l_si_oA_f_sets,
-                               r_k_l_f_sets, r_k_v_f_sets, r_k_oV_f_sets, r_k_a_f_sets, r_k_oA_f_sets,
-                               r_a_l_f_sets, r_a_v_f_sets, r_a_oV_f_sets, r_a_a_f_sets, r_a_oA_f_sets,
-                               l_h_l_f_sets, l_h_v_f_sets, l_h_oV_f_sets, l_h_a_f_sets, l_h_oA_f_sets,
-                               l_k_l_f_sets, l_k_v_f_sets, l_k_oV_f_sets, l_k_a_f_sets, l_k_oA_f_sets,
-                               l_a_l_f_sets, l_a_v_f_sets, l_a_oV_f_sets, l_a_a_f_sets, l_a_oA_f_sets,
+right_shoulder = [r_s_l_f_sets, r_s_v_f_sets, r_s_a_f_sets]
+arm_side_identifier = [a_si_l_f_sets, a_si_v_f_sets, a_si_a_f_sets]
+right_elbow = [r_e_l_f_sets, r_e_v_f_sets, r_e_a_f_sets]
+right_wrist = [r_w_l_f_sets, r_w_v_f_sets, r_w_a_f_sets]
+left_shoulder = [l_s_l_f_sets, l_s_v_f_sets, l_s_a_f_sets]
+left_elbow = [l_e_l_f_sets, l_e_v_f_sets, l_e_a_f_sets]
+left_wrist = [l_w_l_f_sets, l_w_v_f_sets, l_w_a_f_sets]
+chest = [c_l_f_sets, c_v_f_sets, c_a_f_sets]
+small_of_back = [s_l_f_sets, s_v_f_sets, s_a_f_sets]
+right_hip = [r_h_l_f_sets, r_h_v_f_sets, r_h_a_f_sets]
+leg_side_identifier = [l_si_l_f_sets, l_si_v_f_sets, l_si_a_f_sets]
+right_knee = [r_k_l_f_sets, r_k_v_f_sets, r_k_a_f_sets]
+right_ankle = [r_a_l_f_sets, r_a_v_f_sets, r_a_a_f_sets]
+left_hip = [l_h_l_f_sets, l_h_v_f_sets, l_h_a_f_sets]
+left_knee = [l_k_l_f_sets, l_k_v_f_sets, l_k_a_f_sets]
+left_ankle = [l_a_l_f_sets, l_a_v_f_sets, l_a_a_f_sets]
+
+data_for_feature_extraction = [right_shoulder, arm_side_identifier, right_elbow, right_wrist,
+                               left_shoulder, left_elbow, left_wrist,
+                               chest, small_of_back,
+                               right_hip, leg_side_identifier, right_knee, right_ankle,
+                               left_hip, left_knee, left_ankle
                                ]
 
 # Saving the data into a file to avoid having to do this every single time I want to test on the data.
