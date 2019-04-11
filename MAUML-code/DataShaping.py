@@ -1,5 +1,6 @@
 import pickle
 import itertools
+import math
 
 with open("pickle_files/sittingFeatures", 'rb') as f:
     sitting_data = pickle.load(f)
@@ -33,20 +34,26 @@ def build_list_shape(this_list, this_target):
 
             if j == 15:
                 data_processed.append(all_markers_joined)
-                all_markers_joined = []
                 target.append(this_target)
+                all_markers_joined = []
+            else:
+                all_markers_joined = []
 
     return data_processed
 
 
 data = build_list_shape(sitting_data, "sitting")
-data.append(build_list_shape(standing_data, "standing"))
-data.append(build_list_shape(walking_data, "walking"))
+data += (build_list_shape(standing_data, "standing"))
+data += (build_list_shape(walking_data, "walking"))
 
-print(*data[0], sep='\n')
+for i in range(len(data)):
+    print(*data[i], sep='\n')
+    print(" " '\n\n\n\n')
+
 print(target[0])
 
-movement_data = zip(data, target)
-
 with open("pickle_files/movement_data", 'wb') as f:
-    pickle.dump(movement_data, f)
+    pickle.dump(data, f)
+
+with open("pickle_files/movement_targets", 'wb') as fi:
+    pickle.dump(target, fi)
