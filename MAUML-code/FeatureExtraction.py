@@ -1,5 +1,4 @@
 import pickle as pick
-import statistics as stat
 import numpy as np
 import itertools
 
@@ -37,49 +36,27 @@ set_type = len(walking_data[0])
 set_number = len(walking_data[0][0])
 
 standing_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-standing_targets = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
 
 sitting_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-sitting_targets = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
 
 walking_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-walking_targets = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-
-standing_target = "standing"
-sitting_target = "sitting"
-walking_target = "walking"
 
 for i, j, k in itertools.product(range(0, marker_type), range(0, set_type), range(0, set_number)):
             standing_features[i][j][k] = extract_features(stood_data[i][j][k])
             sitting_features[i][j][k] = extract_features(sat_data[i][j][k])
             walking_features[i][j][k] = extract_features(walking_data[i][j][k])
-            standing_targets[i][j][k] = standing_target
-            sitting_targets[i][j][k] = sitting_target
-            walking_targets[i][j][k] = walking_target
 
 
 pickle_out = open("pickle_files/walkingFeatures", 'wb')
 pick.dump(walking_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/walkingTargets", 'wb')
-pick.dump(walking_targets, pickle_out)
-pickle_out.close()
-
 pickle_out = open("pickle_files/standingFeatures", 'wb')
 pick.dump(standing_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/standingTargets", 'wb')
-pick.dump(standing_targets, pickle_out)
-pickle_out.close()
-
 pickle_out = open("pickle_files/sittingFeatures", 'wb')
 pick.dump(sitting_features, pickle_out)
-pickle_out.close()
-
-pickle_out = open("pickle_files/sittingTargets", 'wb')
-pick.dump(sitting_targets, pickle_out)
 pickle_out.close()
 
 print("this is a message, should have made files by now")

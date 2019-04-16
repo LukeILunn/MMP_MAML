@@ -1,6 +1,8 @@
-from sklearn import svm, metrics
+from sklearn.neural_network import MLPClassifier
+from sklearn import metrics
 from sklearn.utils import shuffle
 import pickle
+import numpy as np
 
 with open("pickle_files/movement_data", 'rb') as f:
     data = pickle.load(f)
@@ -13,10 +15,9 @@ print(target[0])
 print(*data[0], sep='\n')
 
 n_samples = len(data)
+data = np.asarray(data, dtype=np.float64)
 
-shuffle(data, target)
-
-classifier = svm.SVC(gamma=0.001)
+classifier = MLPClassifier()
 
 classifier.fit(data[:n_samples // 2], target[:n_samples // 2])
 

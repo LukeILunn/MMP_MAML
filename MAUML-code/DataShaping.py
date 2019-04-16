@@ -36,8 +36,6 @@ def build_list_shape(this_list, this_target):
                 data_processed.append(all_markers_joined)
                 target.append(this_target)
                 all_markers_joined = []
-            else:
-                all_markers_joined = []
 
     return data_processed
 

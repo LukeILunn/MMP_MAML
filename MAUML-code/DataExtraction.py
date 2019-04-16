@@ -20,6 +20,8 @@ def parse_data():
 
                 raw_data_set_full.dropna(how='all', inplace=True)
 
+                raw_data_set_full.fillna(raw_data_set_full.mean(), inplace=True)
+
                 df = raw_data_set_full.values
 
                 incorrect_file = False
