@@ -358,9 +358,20 @@ data_for_feature_extraction = [right_shoulder, arm_side_identifier, right_elbow,
                                left_hip, left_knee, left_ankle
                                ]
 
+reduced_data = [left_wrist[2], leg_side_identifier[2]]
+
+print(*reduced_data[0], sep='\n')
+
 # Saving the data into a file to avoid having to do this every single time I want to test on the data.
 with open("pickle_files/walkingData", 'wb') as f:
     pick.dump(data_for_feature_extraction, f)
+    f.close()
+
+with open("pickle_files/redWalkingData", 'wb') as f:
+    pick.dump(reduced_data, f)
+    f.close()
+
+
 
 # Check this is equal to the frame_rate value to ensure the sets are of the correct size.
 print(len(data_for_feature_extraction[0][0]))

@@ -13,12 +13,9 @@ def extract_features(this_list):
     x_mean, y_mean, z_mean = np.mean(this_list, axis=0)
     x_variance, y_variance, z_variance = np.var(this_list, axis=0)
     x_stdev, y_stdev, z_stdev = np.std(this_list, axis=0)
-    #covariance_matrix = np.cov(this_list)
     feature_list = [x_max, y_max, z_max, x_min, y_min, z_min,
                     x_range, y_range, z_range, x_mean, y_mean, z_mean,
-                    x_variance, y_variance, z_variance, x_stdev, y_stdev, z_stdev
-                    #,covariance_matrix
-                    ]
+                    x_variance, y_variance, z_variance, x_stdev, y_stdev, z_stdev]
     return feature_list
 
 
@@ -31,20 +28,37 @@ with open("pickle_files/satData", 'rb') as f:
 with open("pickle_files/walkingData", 'rb') as f:
     walking_data = pick.load(f)
 
+with open("pickle_files/redStandingData", 'rb') as f:
+    red_stood_data = pick.load(f)
+
+with open("pickle_files/redSittingData", 'rb') as f:
+    red_sat_data = pick.load(f)
+
+with open("pickle_files/redWalkingData", 'rb') as f:
+    red_walking_data = pick.load(f)
+
 marker_type = len(walking_data)
+red_marker_type = len(red_walking_data)
 set_type = len(walking_data[0])
 set_number = len(walking_data[0][0])
 
 standing_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-
 sitting_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
-
 walking_features = [[[0 for k in range(set_number)]for j in range(set_type)] for i in range(marker_type)]
 
+red_standing_features = [[0 for k in range(set_number)]for i in range(red_marker_type)]
+red_sitting_features = [[0 for k in range(set_number)]for i in range(red_marker_type)]
+red_walking_features = [[0 for k in range(set_number)]for i in range(red_marker_type)]
+
 for i, j, k in itertools.product(range(0, marker_type), range(0, set_type), range(0, set_number)):
-            standing_features[i][j][k] = extract_features(stood_data[i][j][k])
-            sitting_features[i][j][k] = extract_features(sat_data[i][j][k])
-            walking_features[i][j][k] = extract_features(walking_data[i][j][k])
+    standing_features[i][j][k] = extract_features(stood_data[i][j][k])
+    sitting_features[i][j][k] = extract_features(sat_data[i][j][k])
+    walking_features[i][j][k] = extract_features(walking_data[i][j][k])
+
+for i, k in itertools.product(range(0, red_marker_type), range(0, set_number)):
+    red_standing_features[i][k] = extract_features(red_stood_data[i][k])
+    red_sitting_features[i][k] = extract_features(red_sat_data[i][k])
+    red_walking_features[i][k] = extract_features(red_walking_data[i][k])
 
 
 pickle_out = open("pickle_files/walkingFeatures", 'wb')
@@ -57,6 +71,18 @@ pickle_out.close()
 
 pickle_out = open("pickle_files/sittingFeatures", 'wb')
 pick.dump(sitting_features, pickle_out)
+pickle_out.close()
+
+pickle_out = open("pickle_files/redWalkingFeatures", 'wb')
+pick.dump(red_walking_features, pickle_out)
+pickle_out.close()
+
+pickle_out = open("pickle_files/redStandingFeatures", 'wb')
+pick.dump(red_standing_features, pickle_out)
+pickle_out.close()
+
+pickle_out = open("pickle_files/redSittingFeatures", 'wb')
+pick.dump(red_sitting_features, pickle_out)
 pickle_out.close()
 
 print("this is a message, should have made files by now")
