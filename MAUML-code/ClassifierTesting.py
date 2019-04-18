@@ -32,10 +32,10 @@ with open("pickle_files/raw_data_reduced_set_targets", 'rb') as fi:
 # print(*data[0], sep='\n')
 
 
-train_frac = 0.7
+train_frac = 0.66
 vald_frac = 0.2
 max_its = 1000
-layer_sizes = (300, 250, 200)
+layer_sizes = (100, 50, 100)
 
 n_samples = int(len(data) * train_frac)
 r_n_samples = int(len(red_data) * train_frac)
@@ -45,9 +45,7 @@ data = np.asarray(data, dtype=np.float64)
 red_data = np.asarray(red_data, dtype=np.float64)
 red_raw_data = np.asarray(red_raw_data, dtype=np.float64)
 
-data, target = shuffle(data, target)
-red_data, red_target = shuffle(red_data, red_target)
-red_raw_data, red_raw_targets = shuffle(red_raw_data, red_raw_targets)
+data, target, red_data, red_target, red_raw_data, red_raw_targets = shuffle(data, target, red_data, red_target, red_raw_data, red_raw_targets)
 
 data = data.reshape(len(data), -1)
 red_raw_data = red_raw_data.reshape(len(red_raw_data), -1)

@@ -361,7 +361,7 @@ while more_input:
                                    left_hip, left_knee, left_ankle
                                    ]
 
-    reduced_data = [right_wrist[2], leg_side_identifier[2]]
+    reduced_data = [right_wrist[2], small_of_back[2]]
 
     print(*reduced_data[0], sep='\n')
 
