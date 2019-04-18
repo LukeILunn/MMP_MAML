@@ -31,9 +31,15 @@ with open("pickle_files/raw_data_reduced_set_targets", 'rb') as fi:
 # print(target[0])
 # print(*data[0], sep='\n')
 
-n_samples = len(data)
-r_n_samples = len(red_data)
-r_r_n_samples = len(red_raw_data)
+
+train_frac = 0.7
+vald_frac = 0.2
+max_its = 1000
+layer_sizes = (300, 250, 200)
+
+n_samples = int(len(data) * train_frac)
+r_n_samples = int(len(red_data) * train_frac)
+r_r_n_samples = int (len(red_raw_data) * train_frac)
 
 data = np.asarray(data, dtype=np.float64)
 red_data = np.asarray(red_data, dtype=np.float64)
@@ -43,24 +49,24 @@ data, target = shuffle(data, target)
 red_data, red_target = shuffle(red_data, red_target)
 red_raw_data, red_raw_targets = shuffle(red_raw_data, red_raw_targets)
 
-data = data.reshape(n_samples, -1)
-red_raw_data = red_raw_data.reshape(r_r_n_samples, -1)
+data = data.reshape(len(data), -1)
+red_raw_data = red_raw_data.reshape(len(red_raw_data), -1)
 
-classifier_for_red_raw = MLPClassifier(hidden_layer_sizes=(100,100,100), max_iter=500, validation_fraction=0.1)
-classifier_for_red = MLPClassifier(hidden_layer_sizes=(100,100,100), max_iter=500, validation_fraction=0.1)
-classifier = MLPClassifier(hidden_layer_sizes=(100,100,100), max_iter=500, validation_fraction=0.1)
+classifier_for_red_raw = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
+classifier_for_red = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
+classifier = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
 
-classifier.fit(data[:n_samples // 2], target[:n_samples // 2])
-classifier_for_red.fit(red_data[:r_n_samples // 2], red_target[:r_n_samples // 2])
-classifier_for_red_raw.fit(red_raw_data[:r_r_n_samples // 2], red_raw_targets[:r_r_n_samples // 2])
+classifier.fit(data[:n_samples], target[:n_samples])
+classifier_for_red.fit(red_data[:r_n_samples], red_target[:r_n_samples])
+classifier_for_red_raw.fit(red_raw_data[:r_r_n_samples], red_raw_targets[:r_r_n_samples])
 
-red_raw_expected = red_raw_targets[r_r_n_samples // 2:]
-red_expected = red_target[r_n_samples // 2:]
-expected = target[n_samples // 2:]
+red_raw_expected = red_raw_targets[r_r_n_samples:]
+red_expected = red_target[r_n_samples:]
+expected = target[n_samples:]
 
-red_raw_predicted = classifier_for_red_raw.predict(red_raw_data[r_r_n_samples // 2:])
-red_predicted = classifier_for_red.predict(red_data[r_n_samples // 2:])
-predicted = classifier.predict(data[n_samples // 2:])
+red_raw_predicted = classifier_for_red_raw.predict(red_raw_data[r_r_n_samples:])
+red_predicted = classifier_for_red.predict(red_data[r_n_samples:])
+predicted = classifier.predict(data[n_samples:])
 
 print("Classification report for classifier %s:\n%s\n"
       % (classifier, metrics.classification_report(expected, predicted)))
