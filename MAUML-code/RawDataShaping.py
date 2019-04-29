@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 
 with open("pickle_files/redSittingData", 'rb') as f:
     red_sitting_data = pickle.load(f)
@@ -20,23 +21,26 @@ targets = []
 
 
 for i in range(0, num_sat_examples):
-    red_sitting_data[0][i] = red_sitting_data[0][i].tolist()
-    red_sitting_data[1][i] = red_sitting_data[1][i].tolist()
-    data_joined.append(red_sitting_data[0][i] + red_sitting_data[1][i])
-    targets.append("sitting")
+    if not np.isnan(red_sitting_data[0][i]).any() and not np.isnan(red_sitting_data[1][i]).any():
+        red_sitting_data[0][i] = red_sitting_data[0][i].tolist()
+        red_sitting_data[1][i] = red_sitting_data[1][i].tolist()
+        data_joined.append(red_sitting_data[0][i] + red_sitting_data[1][i])
+        targets.append("sitting")
 
 
 for i in range(0, num_stood_examples):
-    red_standing_data[0][i] = red_standing_data[0][i].tolist()
-    red_standing_data[1][i] = red_standing_data[1][i].tolist()
-    data_joined.append(red_standing_data[0][i] + red_standing_data[1][i])
-    targets.append("standing")
+    if not np.isnan(red_standing_data[0][i]).any() and not np.isnan(red_standing_data[1][i]).any():
+        red_standing_data[0][i] = red_standing_data[0][i].tolist()
+        red_standing_data[1][i] = red_standing_data[1][i].tolist()
+        data_joined.append(red_standing_data[0][i] + red_standing_data[1][i])
+        targets.append("standing")
 
 for i in range(0, num_walk_examples):
-    red_walking_data[0][i] = red_walking_data[0][i].tolist()
-    red_walking_data[1][i] = red_walking_data[1][i].tolist()
-    data_joined.append(red_walking_data[0][i] + red_walking_data[1][i])
-    targets.append("walking")
+    if not np.isnan(red_walking_data[0][i]).any() and not np.isnan(red_walking_data[1][i]).any():
+        red_walking_data[0][i] = red_walking_data[0][i].tolist()
+        red_walking_data[1][i] = red_walking_data[1][i].tolist()
+        data_joined.append(red_walking_data[0][i] + red_walking_data[1][i])
+        targets.append("walking")
 
 
 print(len(data_joined[0]))

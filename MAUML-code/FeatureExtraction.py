@@ -96,5 +96,3 @@ pickle_out.close()
 pickle_out = open("pickle_files/redSittingFeatures", 'wb')
 pick.dump(red_sitting_features, pickle_out)
 pickle_out.close()
-
-print("this is a message, should have made files by now")

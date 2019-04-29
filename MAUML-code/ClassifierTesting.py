@@ -45,14 +45,16 @@ data = np.asarray(data, dtype=np.float64)
 red_data = np.asarray(red_data, dtype=np.float64)
 red_raw_data = np.asarray(red_raw_data, dtype=np.float64)
 
-data, target, red_data, red_target, red_raw_data, red_raw_targets = shuffle(data, target, red_data, red_target, red_raw_data, red_raw_targets)
+data, target = shuffle(data, target)
+red_data, red_target = shuffle(red_data, red_target)
+red_raw_data, red_raw_targets = shuffle(red_raw_data, red_raw_targets)
 
 data = data.reshape(len(data), -1)
 red_raw_data = red_raw_data.reshape(len(red_raw_data), -1)
 
-classifier_for_red_raw = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
-classifier_for_red = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
-classifier = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac)
+classifier_for_red_raw = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac, shuffle=False)
+classifier_for_red = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac, shuffle=False)
+classifier = MLPClassifier(hidden_layer_sizes=layer_sizes, max_iter=max_its, validation_fraction=vald_frac, shuffle=False)
 
 classifier.fit(data[:n_samples], target[:n_samples])
 classifier_for_red.fit(red_data[:r_n_samples], red_target[:r_n_samples])
@@ -71,14 +73,14 @@ print("Classification report for classifier %s:\n%s\n"
 
 print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
 
-print("\n\n\n")
+print("\n")
 
 print("Classification report for classifier %s:\n%s\n"
       % (classifier_for_red, metrics.classification_report(red_expected, red_predicted)))
 
 print("Confusion matrix:\n%s" % metrics.confusion_matrix(red_expected, red_predicted))
 
-print("\n\n\n")
+print("\n")
 
 print("Classification report for classifier %s:\n%s\n"
       % (classifier_for_red_raw, metrics.classification_report(red_raw_expected, red_raw_predicted)))

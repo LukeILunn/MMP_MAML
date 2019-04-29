@@ -1,6 +1,6 @@
 import pickle
 import itertools
-import math
+import numpy as np
 
 with open("pickle_files/sittingFeatures", 'rb') as f:
     sitting_data = pickle.load(f)
@@ -55,8 +55,10 @@ def build_list_shape(this_list, this_target, these_examples):
             marker_concatenated = []
 
             if j == num_markers-1:
-                data_processed.append(all_markers_joined)
-                target.append(this_target)
+                nan_check = np.asarray(all_markers_joined)
+                if not np.isnan(nan_check).any():
+                    data_processed.append(all_markers_joined)
+                    target.append(this_target)
                 all_markers_joined = []
 
     return data_processed
@@ -68,11 +70,12 @@ def build_red_list_shape(this_list, this_target, these_examples):
 
     for i in range(0, these_examples):
         markers_concatenated = this_list[0][i] + this_list[1][i]
-        data_processed.append(markers_concatenated)
-        red_target.append(this_target)
+        nan_check = np.asarray(markers_concatenated)
+        if not np.isnan(nan_check).any():
+            data_processed.append(markers_concatenated)
+            red_target.append(this_target)
 
     return data_processed
-
 
 data = build_list_shape(sitting_data, "sitting", num_sat_examples)
 data += build_list_shape(standing_data, "standing", num_stood_examples)
