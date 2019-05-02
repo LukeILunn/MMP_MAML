@@ -325,33 +325,31 @@ while more_input:
                                    left_hip, left_knee, left_ankle
                                    ]
 
-    reduced_data = [right_wrist[2], small_of_back[2]]
-
-    print(*reduced_data[0], sep='\n')
+    reduced_data = [right_wrist[2], leg_side_identifier[2]]
 
     # Saving the data into a file to avoid having to do this every single time I want to test on the data.
     if f_name.__contains__("walking"):
-        with open("pickle_files/walkingData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/walkingData", 'wb') as f:
             pick.dump(data_for_feature_extraction, f)
             f.close()
 
-        with open("pickle_files/redWalkingData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/redWalkingData", 'wb') as f:
             pick.dump(reduced_data, f)
             f.close()
     elif f_name.__contains__("sat"):
-        with open("pickle_files/satData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/satData", 'wb') as f:
             pick.dump(data_for_feature_extraction, f)
             f.close()
 
-        with open("pickle_files/redSittingData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/redSittingData", 'wb') as f:
             pick.dump(reduced_data, f)
             f.close()
     elif f_name.__contains__("stood"):
-        with open("pickle_files/stoodData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/stoodData", 'wb') as f:
             pick.dump(data_for_feature_extraction, f)
             f.close()
 
-        with open("pickle_files/redStandingData", 'wb') as f:
+        with open("pickle_files/DataExtraction_results/redStandingData", 'wb') as f:
             pick.dump(reduced_data, f)
             f.close()
 

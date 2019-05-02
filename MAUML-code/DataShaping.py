@@ -2,23 +2,29 @@ import pickle
 import itertools
 import numpy as np
 
-with open("pickle_files/sittingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/sittingFeatures", 'rb') as f:
     sitting_data = pickle.load(f)
+    f.close()
 
-with open("pickle_files/standingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/standingFeatures", 'rb') as f:
     standing_data = pickle.load(f)
+    f.close()
 
-with open("pickle_files/walkingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/walkingFeatures", 'rb') as f:
     walking_data = pickle.load(f)
+    f.close()
 
-with open("pickle_files/redSittingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/redSittingFeatures", 'rb') as f:
     red_sitting_data = pickle.load(f)
+    f.close()
 
-with open("pickle_files/redStandingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/redStandingFeatures", 'rb') as f:
     red_standing_data = pickle.load(f)
+    f.close()
 
-with open("pickle_files/redWalkingFeatures", 'rb') as f:
+with open("pickle_files/FeatureExtraction_results/redWalkingFeatures", 'rb') as f:
     red_walking_data = pickle.load(f)
+    f.close()
 
 num_feature_lists = len(sitting_data[0])
 num_sat_examples = len(sitting_data[0][0])
@@ -30,10 +36,6 @@ red_num_sat_examples = len(red_sitting_data[0])
 red_num_stood_examples = len(red_standing_data[0])
 red_num_walk_examples = len(red_walking_data[0])
 red_num_features = len(red_sitting_data[0][0])
-
-print(*sitting_data[0][0], sep='\n')
-print(*standing_data[0][0], sep='\n')
-print(*walking_data[0][0], sep='\n')
 
 target = []
 red_target = []
@@ -77,15 +79,16 @@ def build_red_list_shape(this_list, this_target, these_examples):
 
     return data_processed
 
+
 data = build_list_shape(sitting_data, "sitting", num_sat_examples)
 data += build_list_shape(standing_data, "standing", num_stood_examples)
 data += build_list_shape(walking_data, "walking", num_walk_examples)
 
-with open("pickle_files/movement_data", 'wb') as f:
+with open("pickle_files/DataShaping_results/movement_data", 'wb') as f:
     pickle.dump(data, f)
     f.close()
 
-with open("pickle_files/movement_targets", 'wb') as fi:
+with open("pickle_files/DataShaping_results/movement_targets", 'wb') as fi:
     pickle.dump(target, fi)
     fi.close()
 
@@ -93,14 +96,10 @@ red_data = build_red_list_shape(red_sitting_data, "sitting", red_num_sat_example
 red_data += build_red_list_shape(red_standing_data, "standing", red_num_stood_examples)
 red_data += build_red_list_shape(red_walking_data, "walking", red_num_walk_examples)
 
-print(*red_data[0], sep='\n')
-
-with open("pickle_files/red_movement_data", 'wb') as f:
+with open("pickle_files/DataShaping_results/red_movement_data", 'wb') as f:
     pickle.dump(red_data, f)
     f.close()
 
-with open("pickle_files/red_movement_targets", 'wb') as fi:
+with open("pickle_files/DataShaping_results/red_movement_targets", 'wb') as fi:
     pickle.dump(red_target, fi)
     fi.close()
-
-

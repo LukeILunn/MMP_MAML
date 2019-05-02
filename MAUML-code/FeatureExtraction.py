@@ -1,4 +1,5 @@
 import pickle as pick
+from scipy.stats import kurtosis, skew
 import numpy as np
 import itertools
 
@@ -13,29 +14,38 @@ def extract_features(this_list):
     x_mean, y_mean, z_mean = np.mean(this_list, axis=0)
     x_variance, y_variance, z_variance = np.var(this_list, axis=0)
     x_stdev, y_stdev, z_stdev = np.std(this_list, axis=0)
+    x_kurt, y_kurt, z_kurt = kurtosis(this_list, axis=0)
+    x_skew, y_skew, z_skew = skew(this_list, axis=0)
     feature_list = [x_max, y_max, z_max, x_min, y_min, z_min,
                     x_range, y_range, z_range, x_mean, y_mean, z_mean,
-                    x_variance, y_variance, z_variance, x_stdev, y_stdev, z_stdev]
+                    x_variance, y_variance, z_variance, x_stdev, y_stdev, z_stdev,
+                    x_kurt, y_kurt, z_kurt, x_skew, y_skew, z_skew]
     return feature_list
 
 
-with open("pickle_files/stoodData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/stoodData", 'rb') as f:
     stood_data = pick.load(f)
+    f.close()
 
-with open("pickle_files/satData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/satData", 'rb') as f:
     sat_data = pick.load(f)
+    f.close()
 
-with open("pickle_files/walkingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/walkingData", 'rb') as f:
     walking_data = pick.load(f)
+    f.close()
 
-with open("pickle_files/redStandingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redStandingData", 'rb') as f:
     red_stood_data = pick.load(f)
+    f.close()
 
-with open("pickle_files/redSittingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redSittingData", 'rb') as f:
     red_sat_data = pick.load(f)
+    f.close()
 
-with open("pickle_files/redWalkingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redWalkingData", 'rb') as f:
     red_walking_data = pick.load(f)
+    f.close()
 
 marker_type = len(walking_data)
 red_marker_type = len(red_walking_data)
@@ -73,26 +83,26 @@ for i, k in itertools.product(range(0, red_marker_type), range(0, set_number)):
         red_walking_features[i][k] = extract_features(red_walking_data[i][k])
 
 
-pickle_out = open("pickle_files/walkingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/walkingFeatures", 'wb')
 pick.dump(walking_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/standingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/standingFeatures", 'wb')
 pick.dump(standing_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/sittingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/sittingFeatures", 'wb')
 pick.dump(sitting_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/redWalkingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/redWalkingFeatures", 'wb')
 pick.dump(red_walking_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/redStandingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/redStandingFeatures", 'wb')
 pick.dump(red_standing_features, pickle_out)
 pickle_out.close()
 
-pickle_out = open("pickle_files/redSittingFeatures", 'wb')
+pickle_out = open("pickle_files/FeatureExtraction_results/redSittingFeatures", 'wb')
 pick.dump(red_sitting_features, pickle_out)
 pickle_out.close()

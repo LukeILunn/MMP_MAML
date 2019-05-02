@@ -1,13 +1,13 @@
 import pickle
 import numpy as np
 
-with open("pickle_files/redSittingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redSittingData", 'rb') as f:
     red_sitting_data = pickle.load(f)
 
-with open("pickle_files/redStandingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redStandingData", 'rb') as f:
     red_standing_data = pickle.load(f)
 
-with open("pickle_files/redWalkingData", 'rb') as f:
+with open("pickle_files/DataExtraction_results/redWalkingData", 'rb') as f:
     red_walking_data = pickle.load(f)
     f.close()
 
@@ -42,15 +42,10 @@ for i in range(0, num_walk_examples):
         data_joined.append(red_walking_data[0][i] + red_walking_data[1][i])
         targets.append("walking")
 
-
-print(len(data_joined[0]))
-
-print(*data_joined[0], sep='\n')
-
-with open("pickle_files/raw_data_reduced_set", 'wb') as f:
+with open("pickle_files/RawDataShaping_results/raw_data_reduced_set", 'wb') as f:
     pickle.dump(data_joined, f)
     f.close()
 
-with open("pickle_files/raw_data_reduced_set_targets", 'wb') as f:
+with open("pickle_files/RawDataShaping_results/raw_data_reduced_set_targets", 'wb') as f:
     pickle.dump(targets, f)
     f.close()
