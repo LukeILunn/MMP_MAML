@@ -7,18 +7,23 @@ import numpy as np
 # "time_step" is used to decide the amount of frames to be stored in a single list when they are appended.
 f_name = ""
 more_input = True
+
+# This variable is edited during experiments with different time step sizes
 time_step = 200
 
 
 # Method to grab the data from a given csv file (input will only find files in the csv_files folder and only
-# files containing the file type .csv), drops the necessary columns and returns the raw data as a pandas data frame
+# files containing the file type .csv), drops the necessary columns and returns the raw data as a pandas DataFrame.
 def extract_data():
     global f_name
     df = pd.DataFrame
     incorrect_file = True
     while incorrect_file:
         try:
+            print("Please enter all three files in any order, these are: \n"
+                  "walking.csv, stood.csv, and sat.csv\n")
             f_name = input("Please enter the file you would like to load: ")
+            # Method will loop until an existing filename with the suffix .csv is written
             if f_name.__contains__(".csv"):
                 raw_data_set_full = pd.read_csv("csv_files/" + f_name,
                                                 header=4,
@@ -28,6 +33,7 @@ def extract_data():
 
                 raw_data_set_full.dropna(how='all', inplace=True)
 
+                # original but flawed method of dealing with any remaining NaN values.
                 #raw_data_set_full.fillna(raw_data_set_full.mean(), inplace=True)
 
                 df = raw_data_set_full.values
@@ -40,7 +46,8 @@ def extract_data():
 
     return df
 
-
+# This method is called within a loop to replace any NaN values within each time step.
+# Works much better than the original method which replaced NaN values over the entire dataset.
 def fill_NaNs(from_list):
     ret = from_list[i:i + time_step, :]
     mean_of_columns = np.nanmean(ret, axis=0)
@@ -48,7 +55,9 @@ def fill_NaNs(from_list):
     ret[nans] = np.take(mean_of_columns, nans[1])
     return ret
 
-
+# Uses a while loop with an exit condition to ask for files until the user has entered all three
+# of the files. walking.csv, stood.csv, and sat.csv. This script is designed specifically to deal
+# with those three csv files and would not work for a different input due to the pickle_file step.
 while more_input:
     # Start the extract_data method so when this file is run it will prompt the user.
     data = extract_data()
@@ -186,7 +195,8 @@ while more_input:
     l_a_v_f_sets = []
     l_a_a_f_sets = []
 
-    # Grab the data and put it into lists based upon the specified time_step chosen. Currently sets of 50 frames
+    # Grab the data and put it into lists based upon the specified time_step chosen. Currently sets of 200 frames
+    # This loop also deals with NaN values, by replacing them with the mean of the set involved in this time step.
     for i in range(0, (r_sho_loc.shape[0] - time_step), time_step):
 
         loc_filler = fill_NaNs(r_sho_loc)
@@ -301,6 +311,7 @@ while more_input:
         l_a_v_f_sets.append(vel_filler)
         l_a_a_f_sets.append(acc_filler)
 
+    # complete time steps of data separated by marker and data type.
     right_shoulder = [r_s_l_f_sets, r_s_v_f_sets, r_s_a_f_sets]
     arm_side_identifier = [a_si_l_f_sets, a_si_v_f_sets, a_si_a_f_sets]
     right_elbow = [r_e_l_f_sets, r_e_v_f_sets, r_e_a_f_sets]
@@ -318,6 +329,7 @@ while more_input:
     left_knee = [l_k_l_f_sets, l_k_v_f_sets, l_k_a_f_sets]
     left_ankle = [l_a_l_f_sets, l_a_v_f_sets, l_a_a_f_sets]
 
+    # this variable represents the full marker set, ready for feature extraction.
     data_for_feature_extraction = [right_shoulder, arm_side_identifier, right_elbow, right_wrist,
                                    left_shoulder, left_elbow, left_wrist,
                                    chest, small_of_back,
@@ -325,9 +337,14 @@ while more_input:
                                    left_hip, left_knee, left_ankle
                                    ]
 
+    # The variables included in the reduced marker set can be changed here to test different combinations
+    # right wrist and leg side identifier were eventually decided to be the best combination for this program.
     reduced_data = [right_wrist[2], leg_side_identifier[2]]
 
     # Saving the data into a file to avoid having to do this every single time I want to test on the data.
+    # Again note that this is specifically engineered to deal with the 3 files which have been produced for
+    # this project and would not work on other data. New data extraction scripts may have to be written to
+    # deal with different csv files and prepare them for feature extraction.
     if f_name.__contains__("walking"):
         with open("pickle_files/DataExtraction_results/walkingData", 'wb') as f:
             pick.dump(data_for_feature_extraction, f)
@@ -356,6 +373,8 @@ while more_input:
 
     # Check this is equal to the frame_rate value to ensure the sets are of the correct size.
     print(len(data_for_feature_extraction[0][0]))
+
+    # Ask the user if there are any other files left that they would like to load.
     reply = input("\n\n\nWould you like to enter another file? [y] [n]")
     reply = reply.lower()
     if reply.__contains__("y"):
@@ -363,4 +382,6 @@ while more_input:
     elif reply.__contains__("n"):
         more_input = False
 
-print("\n\nData extraction complete, files should exist in pickle_files directory.")
+print("\n\nData extraction complete, files should exist in pickle_files directory.\n")
+
+print("Please now run FeatureExtraction.py as the next step of the program.")

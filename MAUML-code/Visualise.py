@@ -3,18 +3,22 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+# The creation of the array which is used as the baseline indicator.
 chance = np.array([0.5] * 30)
 
 
+# This method will be run as a default for a complete run of all of the scripts. This will produce a comparison
+# Graph with the optimal settings, as discovered from the tests performed.
 def visualise_full_vs_red_vs_raw():
     with open("pickle_files/final_comparison/cross_val_avgs", 'rb') as f:
         cross_val_avgs = pickle.load(f)
         f.close()
 
-    with open("pickle_files/cross_val_stdev", 'rb') as f:
+    with open("pickle_files/final_comparison/cross_val_stdev", 'rb') as f:
         cross_val_stdev = pickle.load(f)
         f.close()
 
+    # Empty NumPy arrays for storing the values which were loaded using pickle
     full_avgs = np.array([])
     red_avgs = np.array([])
     raw_avgs = np.array([])
@@ -23,6 +27,7 @@ def visualise_full_vs_red_vs_raw():
     red_stdev = np.array([])
     raw_stdev = np.array([])
 
+    # Append all of the average and standard deviation values to their relavant variables
     for i in range(len(cross_val_avgs)):
         full_avgs = np.append(cross_val_avgs[i][0], full_avgs)
         red_avgs = np.append(cross_val_avgs[i][1], red_avgs)
@@ -31,16 +36,25 @@ def visualise_full_vs_red_vs_raw():
         red_stdev = np.append(cross_val_stdev[i][1], red_stdev)
         raw_stdev = np.append(cross_val_stdev[i][2], raw_stdev)
 
+    # Store the average standard deviation for use in ax.fill_between() which creates the error band
+    # in the plot.
     full_avg_err = full_stdev.mean()
     red_avg_err = red_stdev.mean()
     raw_avg_err = raw_stdev.mean()
 
+    # The data to be plotted is stored in this DataFrame for easy plotting by calling the relevant y label.
     df = pd.DataFrame({'x': range(1, 31), 'y1': full_avgs, 'y2': red_avgs, 'y3': raw_avgs, 'y4': chance})
 
+    # The range here is used for the error band plotting as the DataFrame cannot be used in the fill_between()
+    # method.
     x = range(1, 31)
 
+    # Create the necessary objects for plotting.
     fig = plt.figure()
     ax = plt.subplot(111)
+
+    # Plot all the lines and the error bands if left uncommented. To remove error bands and just plot lines
+    # comment lines 60, 62, and 64.
     ax.plot('x', 'y4', data=df, marker='', color='darkorange', linewidth=3, label='baseline')
     ax.plot('x', 'y1', data=df, marker='', color='black', linewidth=1.5, label='full markers with features')
     ax.fill_between(x, full_avgs - full_avg_err, full_avgs + full_avg_err)
@@ -48,17 +62,29 @@ def visualise_full_vs_red_vs_raw():
     ax.fill_between(x, red_avgs - red_avg_err, red_avgs + red_avg_err)
     ax.plot('x', 'y3', data=df, marker='', color='red', linewidth=1.5, label='reduced set raw data')
     ax.fill_between(x, raw_avgs - raw_avg_err, raw_avgs + raw_avg_err)
+
+    # Set location of the legend within the plot, sometimes may also need n_cols set if there are many lines.
     ax.legend(loc=3)
+
+    # Setting the numbers upon the x-axis and y-axis and the values between each tick.
     plt.xticks(np.arange(0, 30.1, 2))
     plt.yticks(np.arange(0.00, 1.01, 0.05))
+
+    #Creating a grid to make it clearer where the lines actually sit on the axes.
     ax.grid(color='black', linestyle='-', linewidth=0.2)
+
+    # Setting various labels and limits.
     ax.set_xlabel('Test Number')
     ax.set_ylabel('Average Accuracy (%)')
-    plt.title("K-fold Cross Validation Scores (Time step: 200, reduced set: rw and sob)\n"
+    plt.title("K-fold Cross Validation Scores (Time step: 200, reduced set: rw and lsi)\n"
               "Optimal setting after tests")
     plt.ylim(0.00, 1.00)
+
+    # Once all settings are appropriate the plot can be shown and shoul appear
     plt.show()
 
+    # The overall averages are stored here to be printed, these can provide some clarity and augment the
+    # plots well.
     full_overall_avg = np.mean(full_avgs)
     red_overall_avg = np.mean(red_avgs)
     raw_overall_avg = np.mean(raw_avgs)
@@ -74,6 +100,8 @@ def visualise_full_vs_red_vs_raw():
     print("for reduced with raw data: ", raw_avg_err)
 
 
+# This method was used to visualise the tests for different marker combinations. It works in very much the same way
+# as the visualise_full_vs_red_vs_raw() method, but with more variables to be plotted.
 def visualise_red_marker_combinations():
     with open("pickle_files/reduced_marker_tests/cross_val_stdev_rw_rh", 'rb') as f:
         rw_rh_std = pickle.load(f)
@@ -225,7 +253,13 @@ def visualise_red_marker_combinations():
     print("for left wrist with small of back: ", lw_sob_std.mean())
 
 
-def visualise_time_step_comparsion():
+# Visualising the time step comparison became slightly different where I began to use looping to load the
+# variables. The code is again very much the same until there is a different plot at the bottom of the method
+# by providing a 0, 1, or 2 the method will create 1 of 3 types of plot. 0 shows all of the time step lines
+# on the same plot with the 30 tests as the x-axis. 1 will show a progression of average accuracy with increasing
+# time step values, with time step value as the x-axis. 2 will show the same as 1 but for standard deviation, which
+# becomes the y-axis.
+def visualise_time_step_comparsion(which_plot):
     time_steps = ["25", "50", "75", "100", "125", "150", "175", "200", "225", "250", "275", "300"]
     time_step_avgs = []
     time_step_stds = []
@@ -363,52 +397,57 @@ def visualise_time_step_comparsion():
 
     x = range(25, 325, 25)
 
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    # ax.plot('x', 'y13', data=df, marker='', color='black', linewidth=3, label='baseline')
-    # ax.plot('x', 'y1', data=df, marker='', color='olive', linewidth=1.5, label='25_frames')
-    # ax.plot('x', 'y2', data=df, marker='', color='blue', linewidth=1.5, label='50_frames')
-    # ax.plot('x', 'y3', data=df, marker='', color='orange', linewidth=1.5, label='75_frames')
-    # ax.plot('x', 'y4', data=df, marker='', color='purple', linewidth=1.5, label='100_frames')
-    # ax.plot('x', 'y5', data=df, marker='', color='red', linewidth=1.5, label='125_frames')
-    # ax.plot('x', 'y6', data=df, marker='', color='limegreen', linewidth=1.5, label='150_frames')
-    # ax.plot('x', 'y7', data=df, marker='', color='yellow', linewidth=1.5, label='175_frames')
-    # ax.plot('x', 'y8', data=df, marker='', color='pink', linewidth=1.5, label='200_frames')
-    # ax.plot('x', 'y9', data=df, marker='', color='skyblue', linewidth=1.5, label='225_frames')
-    # ax.plot('x', 'y10', data=df, marker='', color='darkorange', linewidth=1.5, label='250_frames')
-    # ax.plot('x', 'y11', data=df, marker='', color='cyan', linewidth=1.5, label='275_frames')
-    # ax.plot('x', 'y12', data=df, marker='', color='magenta', linewidth=1.5, label='300_frames')
-    # plt.xticks(np.arange(0, 30, 2))
-    # plt.yticks(np.arange(0.00, 1.01, 0.05))
-    # ax.legend(loc=3, ncol=2)
-    # ax.grid(color='black', linestyle='-', linewidth=0.2)
-    # ax.set_xlabel('Test Number')
-    # ax.set_ylabel('Average Accuracy (%)')
-    # plt.title("K-fold Cross Validation Scores\n "
-    #           "Time step: testing different time step values, reduced set: rw_lsi")
-    # plt.ylim(0.00, 1.00)
-
-    # ax.plot(x, overall_avgs, marker='', color='red', linewidth=1.5, label='average accuracy')
-    # plt.xticks(np.arange(25, 300.1, 25))
-    # plt.yticks(np.arange(0.00, 1.01, 0.05))
-    # ax.legend(loc=3)
-    # ax.grid(color='black', linestyle='-', linewidth=0.2)
-    # ax.set_xlabel('Number of frames per step')
-    # ax.set_ylabel('Average Accuracy (%)')
-    # plt.title("K-fold Cross Validation Scores\n "
-    #           "Time step: testing different time step values, reduced set: rw_lsi")
-    # plt.ylim(0.00, 1.00)
-
-    ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='average stdev')
-    plt.xticks(np.arange(25, 300.1, 25))
-    plt.yticks(np.arange(0.00, 0.10, 0.01))
-    ax.legend(loc=3)
-    ax.grid(color='black', linestyle='-', linewidth=0.2)
-    ax.set_xlabel('Number of frames per step')
-    ax.set_ylabel('Average stdev')
-    plt.title("K-fold Cross Validation Scores\n "
-              "Time step: testing different time step values, reduced set: rw_lsi")
-    plt.ylim(0.01, 0.09)
+    if which_plot == 0:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot('x', 'y13', data=df, marker='', color='black', linewidth=3, label='baseline')
+        ax.plot('x', 'y1', data=df, marker='', color='olive', linewidth=1.5, label='25_frames')
+        ax.plot('x', 'y2', data=df, marker='', color='blue', linewidth=1.5, label='50_frames')
+        ax.plot('x', 'y3', data=df, marker='', color='orange', linewidth=1.5, label='75_frames')
+        ax.plot('x', 'y4', data=df, marker='', color='purple', linewidth=1.5, label='100_frames')
+        ax.plot('x', 'y5', data=df, marker='', color='red', linewidth=1.5, label='125_frames')
+        ax.plot('x', 'y6', data=df, marker='', color='limegreen', linewidth=1.5, label='150_frames')
+        ax.plot('x', 'y7', data=df, marker='', color='yellow', linewidth=1.5, label='175_frames')
+        ax.plot('x', 'y8', data=df, marker='', color='pink', linewidth=1.5, label='200_frames')
+        ax.plot('x', 'y9', data=df, marker='', color='skyblue', linewidth=1.5, label='225_frames')
+        ax.plot('x', 'y10', data=df, marker='', color='darkorange', linewidth=1.5, label='250_frames')
+        ax.plot('x', 'y11', data=df, marker='', color='cyan', linewidth=1.5, label='275_frames')
+        ax.plot('x', 'y12', data=df, marker='', color='magenta', linewidth=1.5, label='300_frames')
+        plt.xticks(np.arange(0, 30, 2))
+        plt.yticks(np.arange(0.00, 1.01, 0.05))
+        ax.legend(loc=3, ncol=2)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Test Number')
+        ax.set_ylabel('Average Accuracy (%)')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: testing different time step values, reduced set: rw_lsi")
+        plt.ylim(0.00, 1.00)
+    elif which_plot == 1:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_avgs, marker='', color='red', linewidth=1.5, label='average accuracy')
+        plt.xticks(np.arange(25, 300.1, 25))
+        plt.yticks(np.arange(0.00, 1.01, 0.05))
+        ax.legend(loc=3)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Number of frames per step')
+        ax.set_ylabel('Average Accuracy (%)')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: testing different time step values, reduced set: rw_lsi")
+        plt.ylim(0.00, 1.00)
+    elif which_plot == 2:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='average stdev')
+        plt.xticks(np.arange(25, 300.1, 25))
+        plt.yticks(np.arange(0.00, 0.10, 0.01))
+        ax.legend(loc=3)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Number of frames per step')
+        ax.set_ylabel('Average stdev')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: testing different time step values, reduced set: rw_lsi")
+        plt.ylim(0.01, 0.09)
 
     plt.show()
 
@@ -439,7 +478,12 @@ def visualise_time_step_comparsion():
     print("for 300 frames: ", stds_300.mean())
 
 
-def visualise_hidden_layer_comparison():
+# This method was used to visualise the tests for the different sizes of hidden layers. Its function
+# basically stores the variables for the single-layer line, two-layer line, and three-layer line separately.
+# Then, depending upon the which_plot value passed it will plot either the accuracy progression with increasing
+# hidden layer sizes (0), or the standard deviation progresssion with increasing hidden layer sizes (1).
+def visualise_hidden_layer_comparison(which_plot):
+    # Create arrays for looping through file names
     num_nodes = ["50", "100", "150", "200", "250", "300", "350", "400", "450", "500", "550", "600"]
     f_names = ["single_layer_tests/", "two_layer_tests/", "three_layer_tests/"]
     num_nodes_avgs = []
@@ -449,6 +493,7 @@ def visualise_hidden_layer_comparison():
     num_nodes_avgs_3 = []
     num_nodes_stds_3 = []
 
+    # Load variables from relevant pickle files.
     for x in range(3):
         for i in range(len(num_nodes)):
             f_name = "pickle_files/" + f_names[x] + "cross_val_avgs_layer_size_" + num_nodes[i]
@@ -487,6 +532,7 @@ def visualise_hidden_layer_comparison():
                     num_nodes_stds_3.append(var)
                     f.close()
 
+    # For each line type, store the values in a NumPy array and flatten the data to 1 dimension
     overall_avgs = np.array([])
     overall_stds = np.array([])
     num_nodes_avgs = np.asarray(num_nodes_avgs)
@@ -534,42 +580,43 @@ def visualise_hidden_layer_comparison():
 
     x = range(50, 650, 50)
 
-    # fig = plt.figure()
-    # ax = plt.subplot(111)
-    # ax.plot(x, overall_avgs, marker='', color='blue', linewidth=1.5, label='single layer')
-    # ax.plot(x, overall_avgs_2, marker='', color='black', linewidth=1.5, label='two layers')
-    # ax.plot(x, overall_avgs_3, marker='', color='skyblue', linewidth=1.5, label='three layers')
-    # plt.xticks(np.arange(50, 600.1, 50))
-    # plt.yticks(np.arange(0.00, 1.01, 0.05))
-    # ax.legend(loc=3)
-    # ax.grid(color='black', linestyle='-', linewidth=0.2)
-    # ax.set_xlabel('Number of nodes per layer')
-    # ax.set_ylabel('Average Accuracy (%)')
-    # plt.title("K-fold Cross Validation Scores\n "
-    #           "Time step: 200, reduced set: rw_lsi\n"
-    #           "Testing different numbers of layers")
-    # plt.ylim(0.00, 1.01)
-
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='single layer')
-    ax.plot(x, overall_stds_2, marker='', color='black', linewidth=1.5, label='two layers')
-    ax.plot(x, overall_stds_3, marker='', color='skyblue', linewidth=1.5, label='three layers')
-    plt.xticks(np.arange(50, 600.1, 50))
-    plt.yticks(np.arange(0.00, 0.31, 0.05))
-    ax.legend(loc=7)
-    ax.grid(color='black', linestyle='-', linewidth=0.2)
-    ax.set_xlabel('Number of nodes per layer')
-    ax.set_ylabel('Average stdev')
-    plt.title("K-fold Cross Validation Scores\n "
-              "Time step: 200, reduced set: rw_lsi\n"
-              "Testing different numbers of layers")
-    plt.ylim(0.00, 0.31)
+    if which_plot == 0:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_avgs, marker='', color='blue', linewidth=1.5, label='single layer')
+        ax.plot(x, overall_avgs_2, marker='', color='black', linewidth=1.5, label='two layers')
+        ax.plot(x, overall_avgs_3, marker='', color='skyblue', linewidth=1.5, label='three layers')
+        plt.xticks(np.arange(50, 600.1, 50))
+        plt.yticks(np.arange(0.00, 1.01, 0.05))
+        ax.legend(loc=3)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Number of nodes per layer')
+        ax.set_ylabel('Average Accuracy (%)')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: 200, reduced set: rw_lsi\n"
+                  "Testing different numbers of layers")
+        plt.ylim(0.00, 1.01)
+    elif which_plot == 1:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='single layer')
+        ax.plot(x, overall_stds_2, marker='', color='black', linewidth=1.5, label='two layers')
+        ax.plot(x, overall_stds_3, marker='', color='skyblue', linewidth=1.5, label='three layers')
+        plt.xticks(np.arange(50, 600.1, 50))
+        plt.yticks(np.arange(0.00, 0.31, 0.05))
+        ax.legend(loc=7)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Number of nodes per layer')
+        ax.set_ylabel('Average stdev')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: 200, reduced set: rw_lsi\n"
+                  "Testing different numbers of layers")
+        plt.ylim(0.00, 0.31)
 
     plt.show()
 
-
-def visualise_max_iter_comparison():
+# Works essentially the same as visualise_hidden_layer_comparison() except with only one line to deal with.
+def visualise_max_iter_comparison(which_plot):
     max_iter = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000",
                 "4500", "5000", "5500", "6000", "6500", "7000", "7500", "8000",
                 "8500", "9000", "9500", "10000"]
@@ -604,35 +651,40 @@ def visualise_max_iter_comparison():
 
     x = range(500, 10500, 500)
 
-    # fig = plt.figure()
-    # ax = plt.subplot(111)
-    # ax.plot(x, overall_avgs, marker='', color='blue', linewidth=1.5, label='Mean Accuracies')
-    # plt.xticks(np.arange(500, 10500.1, 1000))
-    # plt.yticks(np.arange(0.00, 1.01, 0.05))
-    # ax.legend(loc=3)
-    # ax.grid(color='black', linestyle='-', linewidth=0.2)
-    # ax.set_xlabel('Max Iterations')
-    # ax.set_ylabel('Average Accuracy (%)')
-    # plt.title("K-fold Cross Validation Scores\n "
-    #           "Time step: 200, reduced set: rw_lsi\n"
-    #           "Testing different max iteration settings")
-    # plt.ylim(0.00, 1.01)
-
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='single layer')
-    plt.xticks(np.arange(500, 10500.1, 1000))
-    plt.yticks(np.arange(0.00, 0.31, 0.05))
-    ax.legend(loc=7)
-    ax.grid(color='black', linestyle='-', linewidth=0.2)
-    ax.set_xlabel('Max Iterations')
-    ax.set_ylabel('Average stdev')
-    plt.title("K-fold Cross Validation Scores\n "
-              "Time step: 200, reduced set: rw_lsi\n"
-              "Testing different max iteration settings")
-    plt.ylim(0.00, 0.31)
+    if which_plot == 0:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_avgs, marker='', color='blue', linewidth=1.5, label='Mean Accuracies')
+        plt.xticks(np.arange(500, 10500.1, 1000))
+        plt.yticks(np.arange(0.00, 1.01, 0.05))
+        ax.legend(loc=3)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Max Iterations')
+        ax.set_ylabel('Average Accuracy (%)')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: 200, reduced set: rw_lsi\n"
+                  "Testing different max iteration settings")
+        plt.ylim(0.00, 1.01)
+    elif which_plot == 1:
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.plot(x, overall_stds, marker='', color='blue', linewidth=1.5, label='single layer')
+        plt.xticks(np.arange(500, 10500.1, 1000))
+        plt.yticks(np.arange(0.00, 0.31, 0.05))
+        ax.legend(loc=7)
+        ax.grid(color='black', linestyle='-', linewidth=0.2)
+        ax.set_xlabel('Max Iterations')
+        ax.set_ylabel('Average stdev')
+        plt.title("K-fold Cross Validation Scores\n "
+                  "Time step: 200, reduced set: rw_lsi\n"
+                  "Testing different max iteration settings")
+        plt.ylim(0.00, 0.31)
 
     plt.show()
 
 
+# For the purposes of demonstration, only this method needs to be run, providing an example of
+# the type of plots which were created during the experiments stage.
 visualise_full_vs_red_vs_raw()
+
+print("Visualise.py is complete, test successful!")
